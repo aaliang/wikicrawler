@@ -1,9 +1,9 @@
 package main
 
 import (
-    "fmt"
     "github.com/PuerkitoBio/goquery"
     // "io/ioutil"
+    "log"
     "net/url"
     "os"
     "strconv"
@@ -11,8 +11,16 @@ import (
 )
 
 //for now set this to true
+var fmt = log.New(os.Stdout, "", 0)
 
 func Scrape(target string) (string, map[string]bool) {
+    defer func() {
+        if r := recover(); r != nil {
+            fmt.Println(r)
+        }
+    }()
+
+    fmt.Println("going to " + target)
 
     // Load the HTML document
     var doc *goquery.Document
@@ -32,26 +40,25 @@ func Scrape(target string) (string, map[string]bool) {
     return doc.Text(), linkSet
 }
 
-func Crawl(url string, depth int, hosturi string) {
+func CrawlHandler(url string, depth int, hosturi string) {
     m := map[string]bool{url: true}
     var mx sync.Mutex
     var wg sync.WaitGroup
     var c2 func(string, int)
     c2 = func(url string, depth int) {
+        fmt.Println("in: %s", url)
         defer wg.Done()
         if depth <= 0 {
             return
         }
-        body, urls := Scrape(url)
+        _, urls := Scrape(url)
 
-        fmt.Println(body)
-
-        fmt.Println("found: %s", url)
         mx.Lock()
         for u, _ := range urls {
             if !m[u] {
                 m[u] = true
                 wg.Add(1)
+                fmt.Println("goto: " + u)
                 go c2(u, depth-1)
             }
         }
@@ -88,7 +95,7 @@ func main() {
 
     hosturi := u.Scheme + "://" + u.Host
 
-    Crawl(target, depth, hosturi)
+    CrawlHandler(target, depth, hosturi)
     // Scrape(target)
     fmt.Println("done")
 }
