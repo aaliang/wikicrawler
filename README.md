@@ -20,3 +20,4 @@ TODO: - fix goroutine issue, not sure how it will scale for very large depths
       - add additional options for which links to follow
       - add pagewriter class
       - add abstractions, right now it is super procedural
+      - filter out querystrings

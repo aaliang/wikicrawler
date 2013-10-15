@@ -2,18 +2,18 @@ package main
 
 import (
     "github.com/PuerkitoBio/goquery"
-    // "io/ioutil"
     "log"
     "net/url"
     "os"
     "strconv"
+    "strings"
     "sync"
 )
 
 //for now set this to true
 var fmt = log.New(os.Stdout, "", 0)
 
-func Scrape(target string) (string, map[string]bool) {
+func Scrape(target string, hosturi string) (string, map[string]bool) {
     defer func() {
         if r := recover(); r != nil {
             fmt.Println(r)
@@ -34,7 +34,18 @@ func Scrape(target string) (string, map[string]bool) {
 
     doc.Find("a").Each(func(i int, s *goquery.Selection) {
         link, _ := s.Attr("href")
-        linkSet[link] = true
+
+        if strings.HasSuffix(strings.ToUpper(link), ".JPG") {
+            return
+        }
+
+        //for now, only accept links on the same domain
+        if strings.HasPrefix(link, "/") {
+            linkSet[hosturi+link] = true
+        }
+        if strings.HasPrefix(link, hosturi) {
+            linkSet[link] = true
+        }
     })
 
     return doc.Text(), linkSet
@@ -51,7 +62,7 @@ func CrawlHandler(url string, depth int, hosturi string) {
         if depth <= 0 {
             return
         }
-        _, urls := Scrape(url)
+        _, urls := Scrape(url, hosturi)
 
         mx.Lock()
         for u, _ := range urls {
