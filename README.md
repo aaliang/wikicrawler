@@ -7,17 +7,25 @@ dependencies:
 golang
 goquery (https://github.com/PuerkitoBio/goquery) - which is awesome by the way
  - $ go get github.com/PuerkitoBio/goquery
- - 
+
+ also, make sure your $GOPATH variable is set!
 
 usage:
 
 go run wikicrawler.go [url] [depth]
 
+ex:
+$ go run wikicrawler.go http://wikivoyage.org/wiki/Taipei 2
+
+
 where [url] is the base page to crawl from
       [depth] is the number of times 'recurse' on from the base page
+      
+note: this will create (many) directories in the filesystem on the path that wikicrawler.go is
 
 TODO: - fix goroutine issue, not sure how it will scale for very large depths
       - add additional options for which links to follow
       - add pagewriter class
       - add abstractions, right now it is super procedural
       - filter out querystrings
+      - add option to output to specified path
