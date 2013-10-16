@@ -1,6 +1,7 @@
 The purpose of this project is to download wiki entries (specifically wikivoyage/wikitravel pages) and store them on disk. Since I find myself without internet access a lot (on the road/abroad) this is particularly useful for myself if I want to read up on something without internet access. (obviously the point is to download these pages first)
 
-- this is not yet finished, only the crawler works at this point
+- this is not yet finished. there are a bunch of issues that are still outstanding
+- However this successfully crawls pages to a specified depth, and saves the result onto the filesystem
 
 dependencies:
 
