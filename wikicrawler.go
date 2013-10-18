@@ -22,20 +22,21 @@ func WriteToFile(relativeUrl string, directory string, content string) {
         directory = "."
     }
 
-    pathname := strings.Join([]string{directory, relativeUrl, ".html"}, "")
-    fmt.Println("path: %s", pathname)
+    pathname := strings.Join([]string{directory, relativeUrl}, "")
+    // fmt.Println("path: %s", pathname)
     err := ioutil.WriteFile(pathname, []byte(content), 0777)
-    if err != nil {
-        fmt.Println("ERR: %s", err.Error())
+    if err != nil { //the parent directory doesn't exist on the filesystem
         //get our filename
         //this isn't pretty, but it works for now. TODO: look if there's a better function for doing this
-        splits := strings.Split("/", relativeUrl)
+        splits := strings.Split(relativeUrl, "/")
         filename := splits[len(splits)-1]
         newpath := strings.TrimSuffix(pathname, filename)
         os.MkdirAll(newpath, 0777)
 
         //try writing again
+        fmt.Println("writing file <%s>", pathname)
         ioutil.WriteFile(pathname, []byte(content), 0777)
+        //todo error handle + output
     }
 }
 
@@ -82,15 +83,18 @@ func Scrape(target string, hosturi string) (string, map[string]bool) {
         }
 
         //for now, only accept links on the same domain
-        if strings.HasPrefix(link, "/") {
+        if strings.HasPrefix(link, "//") {
+            linkSet["http:"+link] = true
+        } else if strings.HasPrefix(link, "/") {
             linkSet[hosturi+link] = true
-        }
-        if strings.HasPrefix(link, hosturi) {
+        } else if strings.HasPrefix(link, hosturi) {
             linkSet[link] = true
         }
     })
 
-    return doc.Text(), linkSet
+    html, _ := doc.Html()
+
+    return html, linkSet
 }
 
 /*
@@ -103,14 +107,24 @@ func CrawlHandler(url string, depth int, hosturi string) {
     var wg sync.WaitGroup
     var c2 func(string, int)
     c2 = func(url string, depth int) {
-        // fmt.Println("in: %s", url)
         defer wg.Done()
         if depth <= 0 {
             return
         }
         body, urls := Scrape(url, hosturi)
 
-        WriteToFile(strings.TrimPrefix(url, hosturi), ".", body)
+        //get rid of the domain name, and the http://
+        // var trimmed_url string
+        // if strings.HasPrefix(url, hosturi) {
+        //     trimmed_url = strings.TrimPrefix(url, hosturi)
+        // } else {
+        //     trimmed_url = strings.TrimPrefix(url, "http://")
+        //     // trims if there is a "http://"
+        // }
+
+        trimmed_url := strings.TrimPrefix(url, "http://")
+
+        WriteToFile(trimmed_url, "./output/", body)
 
         // ioutil.WriteFile(filename, data, 0600)
         mx.Lock()
