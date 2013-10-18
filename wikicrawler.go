@@ -130,9 +130,6 @@ func main() {
         }
     }()
 
-    ioutil.WriteFile("test", []byte("lolz"), 0777)
-    os.Mkdir("testfoler/f", 0777)
-
     // handle args
     // TODO: arguments should be a little more robust
     if len(os.Args[1:]) != 2 {
