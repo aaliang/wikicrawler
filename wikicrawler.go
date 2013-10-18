@@ -40,17 +40,6 @@ func WriteToFile(relativeUrl string, directory string, content string) {
     }
 }
 
-func directory_exists(path string) (bool, error) {
-    _, err := os.Stat(path)
-    if err == nil {
-        return true, nil
-    }
-    if os.IsNotExist(err) {
-        return false, nil
-    }
-    return false, err
-}
-
 /*
  * loads an html document given a hosturi, returns the text of the document
  * followed by the links in the page (on the same domain)
@@ -113,20 +102,12 @@ func CrawlHandler(url string, depth int, hosturi string) {
         }
         body, urls := Scrape(url, hosturi)
 
-        //get rid of the domain name, and the http://
-        // var trimmed_url string
-        // if strings.HasPrefix(url, hosturi) {
-        //     trimmed_url = strings.TrimPrefix(url, hosturi)
-        // } else {
-        //     trimmed_url = strings.TrimPrefix(url, "http://")
-        //     // trims if there is a "http://"
-        // }
-
+        //get rid of the http://
         trimmed_url := strings.TrimPrefix(url, "http://")
 
+        //put it in a directory - TODO: we'll want to allow the user to specify the output directory
         WriteToFile(trimmed_url, "./output/", body)
 
-        // ioutil.WriteFile(filename, data, 0600)
         mx.Lock()
         for u, _ := range urls {
             if !m[u] {
