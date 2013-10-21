@@ -130,8 +130,6 @@ func main() {
         }
     }()
 
-    // handle args
-    // TODO: arguments should be a little more robust
     if len(os.Args[1:]) != 2 {
         panic("improper usage.\n args[0] = url; args[1] = depth \n ex. go run wikicrawler.go www.google.com 3")
     }
@@ -150,6 +148,5 @@ func main() {
     hosturi := u.Scheme + "://" + u.Host
 
     CrawlHandler(target, depth, hosturi)
-    // Scrape(target)
     fmt.Println("done")
 }
