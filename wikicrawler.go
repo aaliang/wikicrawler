@@ -81,9 +81,9 @@ func Scrape(target string, hosturi string) (string, map[string]bool) {
 		}
 	})
 
-	doc.Find("img").Each(func(i int, s *goquery.Selection) {
-		link, _ := s.Attr("src")
-	})
+	// doc.Find("img").Each(func(i int, s *goquery.Selection) {
+	// 	link, _ := s.Attr("src")//we'll want to use a routine here to d/l media (css, images etc)
+	// })
 
 	html, _ := doc.Html()
 
