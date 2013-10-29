@@ -15,7 +15,7 @@ var fmt = log.New(os.Stdout, "", 0)
 
 /*
  * given a directory and a url, writes the content to a local file with
- * the 0600 permissions
+ * the 0777 permissions
  */
 func WriteToFile(relativeUrl string, directory string, content string) {
 	if strings.TrimSpace(directory) == "" {
@@ -156,4 +156,5 @@ func main() {
 	CrawlHandler(target, depth, hosturi)
 	// Scrape(target)
 	fmt.Println("done")
+
 }
